@@ -69,7 +69,7 @@ class Matcher(object):
         v = vector.reshape(1, -1)
         return scipy.spatial.distance.cdist(self.matrix, v, 'cosine').reshape(-1)
 
-    def match(self, image_path, topn=10):
+    def match(self, image_path, topn=5):
         features = extract_features(image_path)
         img_distances = self.cos_cdist(features)
         # getting top 5 records
@@ -84,24 +84,25 @@ def show_img(path):
     plt.show()
     
 def run():
-    images_path = r'D:\Documents\itb\semester 3\algeo\tubes2\coba\PINS\pins_Aaron Paul'
-    files = [os.path.join(images_path, p) for p in sorted(os.listdir(images_path))]
+    images_path_query = r'C:\Users\windows\Desktop\query_db\PINS\pins_query'
+    images_path_database = r'C:\Users\windows\Desktop\query_db\PINS\pins_query'
+    files = [os.path.join(images_path_query, p) for p in sorted(os.listdir(images_path_query))]
     # getting 3 random images 
-    sample = random.sample(files, 3)
+    sample = random.sample(files, 1)
     
-    batch_extractor(images_path)
+    #batch_extractor(images_path_database)
 
     ma = Matcher('features.pck')
     
     for s in sample:
         print ('Query image ==========================================')
         show_img(s)
-        names, match = ma.match(s, topn=1)
+        names, match = ma.match(s, topn=5)
         print ('Result images ========================================')
-        for i in range(1):
+        for i in range(5):
             # we got cosine distance, less cosine distance between vectors
             # more they similar, thus we subtruct it from 1 to get match value
             print ('Match %s' % (1-match[i]))
-            show_img(os.path.join(images_path, names[i]))
+            show_img(os.path.join(images_path_database, names[i]))
 
 run()
