@@ -1,7 +1,7 @@
 # Kelompok : Kusuma Istimewa
 # Nama : 
 # 1. Fakhrurrida Clarendia Widodo / 13518091
-# 2. Felix Setiawan
+# 2. Felix Setiawan / 13518078
 # 3. Stefanus Gusega Gunawan / 13518149
 import cv2
 import numpy as np
