@@ -137,8 +137,8 @@ def run():
         names, match = ma.match(s, topn=5)
         print ('Result images ========================================')
         for i in range(5):
-            # we got cosine distance, less cosine distance between vectors
-            # more they similar, thus we subtruct it from 1 to get match value
+            # we got the top less euclidean distance
+            # so we show the real euclidean distance (without 1-)
             print ('Match %s' % (match[i]))
             show_img(os.path.join(images_path_database, names[i]))
 
