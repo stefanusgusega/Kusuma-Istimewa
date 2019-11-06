@@ -107,8 +107,8 @@ class Matcher(object):
 
     def match(self, image_path, topn=5):
         features = extract_features(image_path)
-        img_distances = self.euclid_dist(features)
-        img_distances_arr = np.array(img_distances)
+        img_distances = self.euclid_dist(features)  # bentuk list
+        img_distances_arr = np.array(img_distances) # bentuk numpy array
         # getting top 5 records
         nearest_ids = np.argsort(img_distances_arr)[:topn]
         nearest_img_paths = self.names[nearest_ids].tolist()
@@ -121,8 +121,8 @@ def show_img(path):
     plt.show()
     
 def run():
-    images_path_query = r'C:\Users\windows\Desktop\query_db\PINS\pins_query'
-    images_path_database = r'C:\Users\windows\Desktop\query_db\PINS\pins_query'
+    images_path_query = r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul'
+    images_path_database = r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul'
     files = [os.path.join(images_path_query, p) for p in sorted(os.listdir(images_path_query))]
     # getting 3 random images 
     sample = random.sample(files, 1)
@@ -140,6 +140,7 @@ def run():
             # we got the top less euclidean distance
             # so we show the real euclidean distance (without 1-)
             print ('Match %s' % (match[i]))
+            print("File name : "+str(os.path.basename(names[i])))
             show_img(os.path.join(images_path_database, names[i]))
 
 run()
