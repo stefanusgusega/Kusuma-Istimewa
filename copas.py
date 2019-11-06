@@ -77,12 +77,12 @@ class Matcher(object):
         # determining whether database vector and query vector
         v_database = self.matrix # length(v_database) = banyak data, dimensi matriks 86x2048
         v_query = vector # length(v_query) = 2048
-        dot_product = [0 for n in range(self.number_of_photos)] # akan diisi oleh euclidean^2 dr setiap pencocokan
+        dot_product = [0 for n in range(self.number_of_photos)]
         dist_query = 0
         dist_db = [0 for n in range(self.number_of_photos)]
         dist = [0 for n in range(self.number_of_photos)]
         final = [0 for z in range(self.number_of_photos)]
-        # pengisian array dot_product
+        # pengisian array dot_product dan array dist_db (|y| untuk vektor y)
         for i in range(self.number_of_photos) :
             for j in range(2048) :
                 dot_product[i] += ((v_query[j])*(v_database[i][j]))
@@ -92,12 +92,10 @@ class Matcher(object):
         for l in range(2048) :
             dist_query += ((v_query[l])**2)
         dist_query = (dist_query)**(1/2)
-
-        # pengisian array dist (|x| * |y| untuk dua vektor x dan y)
+        # pengisian array dist (|x| * |y| untuk dua vektor x dan y) dan array final
         for o in range(self.number_of_photos) :
             dist[o] = dist_query*dist_db[o]
             final[o] = -dot_product[o]/dist[o]
-
         return final
     
     def euclid_dist(self, vector):
