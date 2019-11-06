@@ -73,9 +73,38 @@ class Matcher(object):
         self.names = np.array(self.names)
 
     def cos_cdist(self, vector):
-        # getting cosine distance between search image and images database
-        v = vector.reshape(1, -1)
-        return scipy.spatial.distance.cdist(self.matrix, v, 'cosine').reshape(-1)
+        # getting cosine similarity between query image and images database
+        # determining whether database vector and query vector
+        v_database = self.matrix # length(v_database) = banyak data, dimensi matriks 86x2048
+        v_query = vector # length(v_query) = 2048
+        dot_product = [0 for n in range(self.number_of_photos)] # akan diisi oleh euclidean^2 dr setiap pencocokan
+        dist_query = 0
+        dist_db = [0 for n in range(self.number_of_photos)]
+        dist = [0 for n in range(self.number_of_photos)]
+        final = [0 for z in range(self.number_of_photos)]
+        # pengisian array dot_product
+        for i in range(self.number_of_photos) :
+            for j in range(2048) :
+                dot_product[i] += ((v_query[j])*(v_database[i][j]))
+                dist_db[i] += ((v_database[i][j])**2)
+            dist_db[i] = (dist_db[i])**(1/2)
+        # pengisian array dist_query (|x| untuk vektor x)
+        for l in range(2048) :
+            dist_query += ((v_query[l])**2)
+        dist_query = (dist_query)**(1/2)
+        # pengisian array dist_db (|y|untuk vektor y)
+        #for m in range(self.number_of_photos) :
+         #   for n in range(2048) :
+          #      dist_db[m] += ((v_database[m][n])**2)
+           # dist_db[m] = (dist_db[m])**(1/2)
+        # pengisian array dist (|x| * |y| untuk dua vektor x dan y)
+        for o in range(self.number_of_photos) :
+            dist[o] = dist_query*dist_db[o]
+            final[o] = -dot_product[o]/dist[o]
+        # pengisian array final
+        #for k in range(self.number_of_photos) :
+         #   final[k] = -dot_product[k]/dist[k]
+        return final
     
     def euclid_dist(self, vector):
         # getting euclid distance between query image and images database
@@ -93,9 +122,19 @@ class Matcher(object):
             squared[k] = sum[k]**(1/2)
         return squared
 
-    def match(self, image_path, topn=5):
+    def match(self, image_path, topn=5): # matcher dengan metode euclidean distance
         features = extract_features(image_path)
         img_distances = self.euclid_dist(features)  # bentuk list
+        img_distances_arr = np.array(img_distances) # bentuk numpy array
+        # getting top 5 records
+        nearest_ids = np.argsort(img_distances_arr)[:topn].tolist()
+        nearest_img_paths = self.names[nearest_ids].tolist()
+        print(nearest_ids)
+        return nearest_img_paths, img_distances_arr[nearest_ids].tolist()
+
+    def match2(self, image_path, topn=5): # matcher dengan metode cosine similarity
+        features = extract_features(image_path)
+        img_distances = self.cos_cdist(features)  # bentuk list
         img_distances_arr = np.array(img_distances) # bentuk numpy array
         # getting top 5 records
         nearest_ids = np.argsort(img_distances_arr)[:topn].tolist()
@@ -150,7 +189,7 @@ def run_cosine(images_path_query,sumphotos):
     #for s in sample:
     print ('Query image ==========================================')
     show_img(sample)
-    names, match = ma.match(sample, topn=sumphotos)
+    names, match = ma.match2(sample, topn=sumphotos)
     print ('Result images ========================================')
     for i in range(sumphotos):
             # we got the top less euclidean distance
