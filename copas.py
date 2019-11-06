@@ -121,13 +121,13 @@ def show_img(path):
     plt.show()
     
 def run():
-    images_path_query = r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul'
-    images_path_database = r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul'
+    images_path_query = r'C:\Users\windows\Desktop\query_db\PINS\pins_query'
+    images_path_database = r'C:\Users\windows\Desktop\query_db\PINS\pins_db'
     files = [os.path.join(images_path_query, p) for p in sorted(os.listdir(images_path_query))]
     # getting 3 random images 
     sample = random.sample(files, 1)
     
-    #batch_extractor(images_path_database)
+    batch_extractor(images_path_database)
 
     ma = Matcher('features.pck')
     
