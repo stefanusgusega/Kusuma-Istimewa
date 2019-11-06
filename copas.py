@@ -82,27 +82,15 @@ class Matcher(object):
         # determining whether database vector and query vector
         v_database = self.matrix # length(v_database) = banyak data, dimensi matriks 86x2048
         v_query = vector # length(v_query) = 2048
-        # array of euclidean distance without square rooting
-        sum = [0 for n in range(self.number_of_photos)]
-        squared = [0 for l in range(self.number_of_photos)]
-        # for query
-        # counting euclidean distance without square rooting
-        #for i in range(self.number_of_photos) :
-         #   for j in range(2048) :
-          #      euclid_dist_not_squared[j][i] += (v_query[j]-v_database[i][j])**2
-        # summing all elmts without squaring root
+        sum = [0 for n in range(self.number_of_photos)] # akan diisi oleh euclidean^2 dr setiap pencocokan
+        squared = [0 for l in range(self.number_of_photos)] # akan terisi oleh euclidean dr setiap pencocokan (sudah diakar)
+        # pengisian array sum
         for i in range(self.number_of_photos) :
             for j in range(2048) :
                 sum[i] += (v_query[j]-v_database[i][j])**2
+        # pengisian array squared
         for k in range(self.number_of_photos) :
             squared[k] = sum[k]**(1/2)
-        #for l in range(self.number_of_photos) :
-         #   for m in range(2048) :
-          #      sum[l] += euclid_dist_not_squared[m][l]
-        # squaring root
-        #squared = 0
-        #for o in range(self.number_of_photos):
-         #   squared += sum[o]
         return squared
 
     def match(self, image_path, topn=5):
@@ -110,7 +98,7 @@ class Matcher(object):
         img_distances = self.euclid_dist(features)  # bentuk list
         img_distances_arr = np.array(img_distances) # bentuk numpy array
         # getting top 5 records
-        nearest_ids = np.argsort(img_distances_arr)[:topn]
+        nearest_ids = np.argsort(img_distances_arr)[:topn].tolist()
         nearest_img_paths = self.names[nearest_ids].tolist()
         print(nearest_ids)
         return nearest_img_paths, img_distances_arr[nearest_ids].tolist()
@@ -119,6 +107,9 @@ def show_img(path):
     img = imread(path, mode="RGB")
     plt.imshow(img)
     plt.show()
+
+def show_filename(path) :
+    return os.path.basename(path)
     
 def run():
     images_path_query = r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul'
@@ -139,8 +130,10 @@ def run():
         for i in range(5):
             # we got the top less euclidean distance
             # so we show the real euclidean distance (without 1-)
-            print ('Match %s' % (match[i]))
-            print("File name : "+str(os.path.basename(names[i])))
+            print ('Match with Euclidean : %s' % (match[i]))
+            print("Match with cosine : "+str(match[i]))
+            show_filename(names[i])
+            #print("File name match with Euclidean : "+str(os.path.basename(names[i])))
             show_img(os.path.join(images_path_database, names[i]))
 
 run()
