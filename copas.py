@@ -109,6 +109,7 @@ def show_img(path):
     plt.show()
 
 def show_filename(path) :
+    # to show the filename of path
     return os.path.basename(path)
     
 def run():
@@ -132,8 +133,7 @@ def run():
             # so we show the real euclidean distance (without 1-)
             print ('Match with Euclidean : %s' % (match[i]))
             print("Match with cosine : "+str(match[i]))
-            show_filename(names[i])
-            #print("File name match with Euclidean : "+str(os.path.basename(names[i])))
+            print("File name match with Euclidean : "+str(show_filename(names[i])))
             show_img(os.path.join(images_path_database, names[i]))
 
 run()
