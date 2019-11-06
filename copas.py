@@ -145,7 +145,7 @@ def show_filename(path) :
     # to show the filename of path
     return os.path.basename(path)
     
-def run(images_path_query, sumphotos):
+def run_euclid(images_path_query, sumphotos):
     #images_path_query = r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul\Aaron Paul0_262.jpg'
     images_path_database = r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul'
     #files = [os.path.join(images_path_query, p) for p in sorted(os.listdir(images_path_query))]
@@ -165,8 +165,32 @@ def run(images_path_query, sumphotos):
             # we got the top less euclidean distance
             # so we show the real euclidean distance (without 1-)
         print ('Match with Euclidean : %s' % (match[i]))
-        print("Match with cosine : "+str(match[i]))
+        #print("Match with cosine : "+str(match[i]))
         print("File name match with Euclidean : "+str(show_filename(names[i])))
         show_img(os.path.join(images_path_database, names[i]))
     return names
-print(run(r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul\Aaron Paul0_262.jpg',1))
+def run_cosine(images_path_query,sumphotos):
+    #images_path_query = r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul\Aaron Paul0_262.jpg'
+    images_path_database = r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul'
+    #files = [os.path.join(images_path_query, p) for p in sorted(os.listdir(images_path_query))]
+    # getting 3 random images 
+    sample = images_path_query
+    
+    #batch_extractor(images_path_database)
+
+    ma = Matcher('features.pck')
+    
+    #for s in sample:
+    print ('Query image ==========================================')
+    show_img(sample)
+    names, match = ma.match2(sample, topn=sumphotos)
+    print ('Result images ========================================')
+    for i in range(sumphotos):
+            # we got the top less euclidean distance
+            # so we show the real euclidean distance (without 1-)
+        print ('Match with Euclidean : %s' % (match[i]))
+        #print("Match with cosine : "+str(match[i]))
+        print("File name match with Euclidean : "+str(show_filename(names[i])))
+        show_img(os.path.join(images_path_database, names[i]))
+    return names
+print(run_euclid(r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul\Aaron Paul0_262.jpg',1))
