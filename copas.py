@@ -92,18 +92,12 @@ class Matcher(object):
         for l in range(2048) :
             dist_query += ((v_query[l])**2)
         dist_query = (dist_query)**(1/2)
-        # pengisian array dist_db (|y|untuk vektor y)
-        #for m in range(self.number_of_photos) :
-         #   for n in range(2048) :
-          #      dist_db[m] += ((v_database[m][n])**2)
-           # dist_db[m] = (dist_db[m])**(1/2)
+
         # pengisian array dist (|x| * |y| untuk dua vektor x dan y)
         for o in range(self.number_of_photos) :
             dist[o] = dist_query*dist_db[o]
             final[o] = -dot_product[o]/dist[o]
-        # pengisian array final
-        #for k in range(self.number_of_photos) :
-         #   final[k] = -dot_product[k]/dist[k]
+
         return final
     
     def euclid_dist(self, vector):
