@@ -19,7 +19,7 @@ def extract_features(image_path, vector_size=32):
     try:
         # Using KAZE, cause SIFT, ORB and other was moved to additional module
         # which is adding addtional pain during install
-        alg = cv2.KAZE_create()
+        alg = cv2.AKAZE_create()
         # Dinding image keypoints
         kps = alg.detect(image)
         # Getting first 32 of them. 
@@ -114,7 +114,7 @@ class Matcher(object):
             squared[k] = sum[k]**(1/2)
         return squared
 
-    def match(self, image_path, topn=5): # matcher dengan metode euclidean distance
+    def match(self, image_path, topn):
         features = extract_features(image_path)
         img_distances = self.euclid_dist(features)  # bentuk list
         img_distances_arr = np.array(img_distances) # bentuk numpy array
@@ -142,49 +142,25 @@ def show_filename(path) :
     return os.path.basename(path)
     
 def run_euclid(images_path_query, sumphotos):
-    #images_path_query = r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul\Aaron Paul0_262.jpg'
-    images_path_database = r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul'
-    #files = [os.path.join(images_path_query, p) for p in sorted(os.listdir(images_path_query))]
-    # getting 3 random images 
-    sample = images_path_query
-    
+    # database for checking
+    images_path_database = r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul'   
+    # extract all features of all database to features.pck 
     batch_extractor(images_path_database)
-
     ma = Matcher('features.pck')
-    
-    #for s in sample:
-    print ('Query image ==========================================')
-    show_img(sample)
-    names, match = ma.match(sample, topn=sumphotos)
-    print ('Result images ========================================')
-    for i in range(sumphotos):
-            # we got the top less euclidean distance
-            # so we show the real euclidean distance (without 1-)
-        print ('Match with Euclidean : %s' % (match[i]))
-        #print("Match with cosine : "+str(match[i]))
-        print("File name match with Euclidean : "+str(show_filename(names[i])))
-        show_img(os.path.join(images_path_database, names[i]))
+    # mengembalikan array foto paling mirip dari yg paling mirip sampai yg paling tidak mirip
+    # disimpan pada array names (berisi file path dari foto-foto)
+    # menggunakan match (menggunakan Metode Euclidean)
+    names, match = ma.match(images_path_query, sumphotos) 
     return names
 def run_cosine(images_path_query,sumphotos):
-    #images_path_query = r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul\Aaron Paul0_262.jpg'
+    # database for checking
     images_path_database = r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul'
-    #files = [os.path.join(images_path_query, p) for p in sorted(os.listdir(images_path_query))]
-    # getting 3 random images 
-    sample = images_path_query
-    
-    #batch_extractor(images_path_database)
-
+    # extract all features of all database to features.pck
+    batch_extractor(images_path_database)
     ma = Matcher('features.pck')
-    
-    #for s in sample:
-    print ('Query image ==========================================')
-    show_img(sample)
-    names, match = ma.match2(sample, topn=sumphotos)
-    print ('Result images ========================================')
-    for i in range(sumphotos):
-        #print ('Match with cosine : %s' % (match[i]))
-        print("Match with cosine : "+str(round(-match[i]*100,2))+" %") # rounding up to 2 numbers behind decimal
-        print("File name match with Cosine : "+str(show_filename(names[i])))
-        show_img(os.path.join(images_path_database, names[i]))
+    # mengembalikan array foto paling mirip dari yg paling mirip sampai yang paling tidak mirip
+    # disimpan pada array names (berisi file path dari foto-foto)
+    # menggunakan match2 (menggunakan Metode Cosine Similarity)
+    names, match = ma.match2(images_path_query, sumphotos)
     return names
-print(run_cosine(r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Chris Evans\Chris Evans0.jpg',5))
+
