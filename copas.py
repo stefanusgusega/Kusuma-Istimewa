@@ -19,7 +19,7 @@ def extract_features(image_path, vector_size=32):
     try:
         # Using KAZE, cause SIFT, ORB and other was moved to additional module
         # which is adding addtional pain during install
-        alg = cv2.KAZE_create()
+        alg = cv2.AKAZE_create()
         # Dinding image keypoints
         kps = alg.detect(image)
         # Getting first 32 of them. 
@@ -73,30 +73,9 @@ class Matcher(object):
         self.names = np.array(self.names)
 
     def cos_cdist(self, vector):
-        # getting cosine similarity between query image and images database
-        # determining whether database vector and query vector
-        v_database = self.matrix # length(v_database) = banyak data, dimensi matriks 86x2048
-        v_query = vector # length(v_query) = 2048
-        dot_product = [0 for n in range(self.number_of_photos)]
-        dist_query = 0
-        dist_db = [0 for n in range(self.number_of_photos)]
-        dist = [0 for n in range(self.number_of_photos)]
-        final = [0 for z in range(self.number_of_photos)]
-        # pengisian array dot_product dan array dist_db (|y| untuk vektor y)
-        for i in range(self.number_of_photos) :
-            for j in range(2048) :
-                dot_product[i] += ((v_query[j])*(v_database[i][j]))
-                dist_db[i] += ((v_database[i][j])**2)
-            dist_db[i] = (dist_db[i])**(1/2)
-        # pengisian array dist_query (|x| untuk vektor x)
-        for l in range(2048) :
-            dist_query += ((v_query[l])**2)
-        dist_query = (dist_query)**(1/2)
-        # pengisian array dist (|x| * |y| untuk dua vektor x dan y) dan array final
-        for o in range(self.number_of_photos) :
-            dist[o] = dist_query*dist_db[o]
-            final[o] = -dot_product[o]/dist[o]
-        return final
+        # getting cosine distance between search image and images database
+        v = vector.reshape(1, -1)
+        return scipy.spatial.distance.cdist(self.matrix, v, 'cosine').reshape(-1)
     
     def euclid_dist(self, vector):
         # getting euclid distance between query image and images database
@@ -114,19 +93,9 @@ class Matcher(object):
             squared[k] = sum[k]**(1/2)
         return squared
 
-    def match(self, image_path, topn=5): # matcher dengan metode euclidean distance
+    def match(self, image_path, topn):
         features = extract_features(image_path)
         img_distances = self.euclid_dist(features)  # bentuk list
-        img_distances_arr = np.array(img_distances) # bentuk numpy array
-        # getting top 5 records
-        nearest_ids = np.argsort(img_distances_arr)[:topn].tolist()
-        nearest_img_paths = self.names[nearest_ids].tolist()
-        print(nearest_ids)
-        return nearest_img_paths, img_distances_arr[nearest_ids].tolist()
-
-    def match2(self, image_path, topn=5): # matcher dengan metode cosine similarity
-        features = extract_features(image_path)
-        img_distances = self.cos_cdist(features)  # bentuk list
         img_distances_arr = np.array(img_distances) # bentuk numpy array
         # getting top 5 records
         nearest_ids = np.argsort(img_distances_arr)[:topn].tolist()
@@ -145,50 +114,28 @@ def show_filename(path) :
     
 def run_euclid(images_path_query, sumphotos):
     #images_path_query = r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul\Aaron Paul0_262.jpg'
-    images_path_database = r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul'
+    images_path_database = r'D:\Documents\itb\semester 3\algeo\tubes2\coba\PINS\pins_Aaron Paul'
     #files = [os.path.join(images_path_query, p) for p in sorted(os.listdir(images_path_query))]
     # getting 3 random images 
-    sample = images_path_query
+    #sample = images_path_query
     
-    #batch_extractor(images_path_database)
+    batch_extractor(images_path_database)
 
     ma = Matcher('features.pck')
     
     #for s in sample:
-    print ('Query image ==========================================')
-    show_img(sample)
-    names, match = ma.match(sample, topn=sumphotos)
-    print ('Result images ========================================')
+    #print ('Query image ==========================================')
+    #show_img(sample)
+    names, match = ma.match(images_path_query, sumphotos)
+    #print ('Result images ========================================')
+    '''
     for i in range(sumphotos):
             # we got the top less euclidean distance
             # so we show the real euclidean distance (without 1-)
         print ('Match with Euclidean : %s' % (match[i]))
-        #print("Match with cosine : "+str(match[i]))
+        print("Match with cosine : "+str(match[i]))
         print("File name match with Euclidean : "+str(show_filename(names[i])))
         show_img(os.path.join(images_path_database, names[i]))
+    '''
     return names
-def run_cosine(images_path_query,sumphotos):
-    #images_path_query = r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul\Aaron Paul0_262.jpg'
-    images_path_database = r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul'
-    #files = [os.path.join(images_path_query, p) for p in sorted(os.listdir(images_path_query))]
-    # getting 3 random images 
-    sample = images_path_query
-    
-    #batch_extractor(images_path_database)
-
-    ma = Matcher('features.pck')
-    
-    #for s in sample:
-    print ('Query image ==========================================')
-    show_img(sample)
-    names, match = ma.match2(sample, topn=sumphotos)
-    print ('Result images ========================================')
-    for i in range(sumphotos):
-            # we got the top less euclidean distance
-            # so we show the real euclidean distance (without 1-)
-        print ('Match with Euclidean : %s' % (match[i]))
-        #print("Match with cosine : "+str(match[i]))
-        print("File name match with Euclidean : "+str(show_filename(names[i])))
-        show_img(os.path.join(images_path_database, names[i]))
-    return names
-print(run_euclid(r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul\Aaron Paul0_262.jpg',1))
+#print(run_euclid(r'D:\Documents\itb\semester 3\algeo\tubes2\coba\PINS\pins_Aaron Paul\Aaron Paul0_262.jpg',2))
