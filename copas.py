@@ -95,7 +95,7 @@ class Matcher(object):
         # pengisian array dist (|x| * |y| untuk dua vektor x dan y) dan array final
         for o in range(self.number_of_photos) :
             dist[o] = dist_query*dist_db[o]
-            final[o] = -dot_product[o]/dist[o]
+            final[o] = -dot_product[o]/dist[o] # make it negative so we can sort them ascending
         return final
     
     def euclid_dist(self, vector):
@@ -150,7 +150,7 @@ def run_euclid(images_path_query, sumphotos):
     # getting 3 random images 
     sample = images_path_query
     
-    #batch_extractor(images_path_database)
+    batch_extractor(images_path_database)
 
     ma = Matcher('features.pck')
     
@@ -184,11 +184,9 @@ def run_cosine(images_path_query,sumphotos):
     names, match = ma.match2(sample, topn=sumphotos)
     print ('Result images ========================================')
     for i in range(sumphotos):
-            # we got the top less euclidean distance
-            # so we show the real euclidean distance (without 1-)
-        print ('Match with Euclidean : %s' % (match[i]))
-        #print("Match with cosine : "+str(match[i]))
-        print("File name match with Euclidean : "+str(show_filename(names[i])))
+        #print ('Match with cosine : %s' % (match[i]))
+        print("Match with cosine : "+str(round(-match[i]*100,2))+" %") # rounding up to 2 numbers behind decimal
+        print("File name match with Cosine : "+str(show_filename(names[i])))
         show_img(os.path.join(images_path_database, names[i]))
     return names
-print(run_euclid(r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul\Aaron Paul0_262.jpg',1))
+print(run_cosine(r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Chris Evans\Chris Evans0.jpg',5))
