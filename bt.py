@@ -1,9 +1,11 @@
 from tkinter import *
 from tkinter import filedialog
+from tkinter import ttk
 from PIL import ImageTk, Image
 import tkinter.font as Font
 import math
 import copas
+import os
  
 def fileDialog():
     global filename
@@ -53,23 +55,40 @@ def run_program_cosine():
 def window_result():
     global result
     result = Toplevel(root)
-    print(numOfPhotos)
-    button_back = HoverButton(result,text='back', command = back)
-    button_back.grid(row=(math.ceil(numOfPhotos/2) + 1))
+
+    t = ttk.Treeview(result)
+    t.grid(row=1, column=0, columnspan=2, sticky="nsew") # columnspan=2 goes here.
+
+    scroll = Scrollbar(result)
+    scroll.grid(row=1, column=2, sticky="nse") # set this to column=2 so it sits in the correct spot.
+
+    scroll.configure(command=t.yview)
+    t.configure(yscrollcommand=scroll.set)
+
+    # root.columnconfigure(0, weight=1) Removing this line fixes the sizing issue with the entry field.
+    result.columnconfigure(1, weight=1)
+    result.rowconfigure(1, weight=1)
+
+    button_back = HoverButton(t,text='back', command = back)
+    button_back.grid(row=(math.ceil(numOfPhotos/2) + 2))
 
     r=0
     c=0
     for i in range(numOfPhotos):
-        photo = ImageTk.PhotoImage(Image.open(names[i]))
-        label_photo = Label(result,height=300,width=300, image = photo)
+        image = Image.open(names[i])
+        image = image.resize((200, 200), Image.ANTIALIAS)
+        photo = ImageTk.PhotoImage(image)
+        label_photo = Label(t,height=200,width=200, image = photo)
         label_photo.grid(row = r,column=c)
         label_photo.image = photo
+
+        label_file_name = Label(t, text = str(os.path.basename(names[i])))
+        label_file_name.grid(row=r+1,column=c)
         if (c == 1):
             c = 0
-            r += 1
+            r += 2
         else :
             c += 1
-
 
 def back():
     result.destroy()
@@ -130,13 +149,15 @@ welcome = Label(frame_top, text='Face Recognition Program',font=customFont,bg ='
 welcome.grid(row=0,columnspan=3,sticky='nsew')
 welcome['font'] = customFont
 
+'''
 browsebutton = Button(frame_inner_center_left, text="Browse Datasets Directory", bg="yellow",command=browse_button, font = Font1)
 browsebutton.grid(row=0,column=0, columnspan=2,sticky='ew')
+'''
 
 browse_file_button = Button(frame_inner_center_left, text = "Choose an image",bg='orange',command = fileDialog,font=Font1)
-browse_file_button.grid(row=1, column=0,columnspan=2,sticky='ew')
+browse_file_button.grid(row=0, column=0,columnspan=2,sticky='ew')
 
-tulisan_image = Label(frame_inner_center_right, text = 'Image File',font=Font2, height=20, width=50)
+tulisan_image = Label(frame_inner_center_right, text = 'Image File',font=Font2, height=16, width=33,padx=3,pady=3)
 tulisan_image.grid(row=0, columnspan=2)
 
 
@@ -144,7 +165,7 @@ label_numOfPhotos = Label(frame_inner_center_left ,text = 'Masukkan banyaknya fo
 label_numOfPhotos.grid(row=3)
 
 entry_numOfPhotos = Entry(frame_inner_center_left)
-entry_numOfPhotos.grid(row=3,column=1,sticky='nswe')
+entry_numOfPhotos.grid(row=3,column=1,sticky='nsew')
 
 button_run_euclid = HoverButton(frame_inner_center_left, text ='metode euclidean', activebackground = 'silver', command = run_program_euclid,font=Font1)
 button_run_euclid.grid(row=4, sticky='sew')
