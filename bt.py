@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import filedialog
 from PIL import ImageTk, Image
 import tkinter.font as Font
+import math
 import copas
  
 def fileDialog():
@@ -38,10 +39,10 @@ def browse_button():
     folder_path.set(temp)
 
 def run_program_euclid():
-    global names
+    global names,numOfPhotos
     numOfPhotos = int(entry_numOfPhotos.get())
     root.withdraw()
-    names = copas.run_euclid(filename, int(numOfPhotos))
+    names = copas.run_euclid(filename, numOfPhotos)
     window_result()
 
 def run_program_cosine():
@@ -52,19 +53,22 @@ def run_program_cosine():
 def window_result():
     global result
     result = Toplevel(root)
+    print(numOfPhotos)
     button_back = HoverButton(result,text='back', command = back)
-    button_back.grid()
+    button_back.grid(row=(math.ceil(numOfPhotos/2) + 1))
 
-    j=1
-    for i in range(int(numOfPhotos)//2 + 1):
+    r=0
+    c=0
+    for i in range(numOfPhotos):
         photo = ImageTk.PhotoImage(Image.open(names[i]))
         label_photo = Label(result,height=300,width=300, image = photo)
-        label_photo.grid(row = i,column=j)
+        label_photo.grid(row = r,column=c)
         label_photo.image = photo
-        if (j == 2):
-            j = 1
+        if (c == 1):
+            c = 0
+            r += 1
         else :
-            j += 1
+            c += 1
 
 
 def back():
@@ -97,7 +101,7 @@ Font2 = Font.Font(family="cambria",size = 12)
 
 folder_path = StringVar()
 filename = StringVar()
-numOfPhotos = IntVar()
+numOfPhotos = 0
 
 frame_top = Frame(root)
 frame_top.grid(row=0,sticky='n')
