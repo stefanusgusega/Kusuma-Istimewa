@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import filedialog
+from tkinter import messagebox
 from PIL import ImageTk, ImageEnhance, Image
 import tkinter.font as Font
 import math
@@ -34,18 +35,24 @@ def fileDialog():
 #procedure to show result if euclid button is clicked
 def run_program_euclid():
     global names,numOfPhotos
-    numOfPhotos = int(entry_numOfPhotos.get())
-    root.withdraw()
-    names = inti.run_euclid(filename, numOfPhotos)
-    window_result_euclid()
+    if (entry_numOfPhotos.get() == '' or filename == ' '):
+        messagebox.showinfo("Error", "Masukkan tidak valid.")
+    else:
+        numOfPhotos = int(entry_numOfPhotos.get())
+        root.withdraw()
+        names = inti.run_euclid(filename, numOfPhotos)
+        window_result_euclid()
 
 #procedure to show result if cosine button is clicked
 def run_program_cosine():
     global names,match,numOfPhotos
-    numOfPhotos = int(entry_numOfPhotos.get())
-    root.withdraw()
-    names,match = inti.run_cosine(filename, numOfPhotos)
-    window_result_cosine()
+    if (entry_numOfPhotos.get() == '' or filename == ' '):
+        messagebox.showinfo("Error", "Masukkan tidak valid.")
+    else:
+        numOfPhotos = int(entry_numOfPhotos.get())
+        root.withdraw()
+        names,match = inti.run_cosine(filename, numOfPhotos)
+        window_result_cosine()
 
 #procedure back to main menu from result window
 def back():
@@ -223,10 +230,11 @@ submenu = Menu(fileMenu)
 fileMenu.add_command(label="Exit", underline=0, command=root.quit)
 menubar.add_cascade(label="File", underline=0, menu=fileMenu)
 
+Font2 = Font.Font(family="arial",size = 10, weight ='bold')
 thisfont = Font.Font(family='Intro Rust G Base 2 Line')
 
 folder_path = StringVar()
-filename = StringVar()
+filename = ' '
 numOfPhotos = 0
 
 frame_top = Frame(root,background='#edf5d3')
