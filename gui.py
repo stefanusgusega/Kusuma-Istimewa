@@ -1,15 +1,14 @@
 from tkinter import *
 from tkinter import filedialog
-from tkinter import ttk
 from PIL import ImageTk, ImageEnhance, Image
 import tkinter.font as Font
 import math
 import inti
 import os
 
+#Returns an image with reduced opacity.
 def ReduceOpacity(im, opacity):
     """
-    Returns an image with reduced opacity.
     Taken from http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/362879
     """
     assert opacity >= 0 and opacity <= 1
@@ -22,6 +21,7 @@ def ReduceOpacity(im, opacity):
     im.putalpha(alpha)
     return im
  
+#procedure to browse file and dereference filename
 def fileDialog():
     global filename
     filename = filedialog.askopenfilename(initialdir =  folder_path, title = "Select A File", filetype =
@@ -31,29 +31,7 @@ def fileDialog():
     label_photo.grid(columnspan=2, row = 0)
     label_photo.image = photo
 
-class HoverButton(Button):
-    def __init__(self, master, **kw):
-        Button.__init__(self,master=master,**kw)
-        self.defaultBackground = self["background"]
-        self.defaultForeground = self['foreground']
-        self.bind("<Enter>", self.on_enter)
-        self.bind("<Leave>", self.on_leave)
-
-    def on_enter(self, e):
-        self['background'] = self['activebackground']
-        self['foreground'] = self['activeforeground']
-
-    def on_leave(self, e):
-        self['background'] = self.defaultBackground
-        self['foreground'] = self.defaultForeground
-'''
-def browse_button():
-    # Allow user to select a directory and store it in global var
-    # called folder_path
-    global folder_path
-    temp = filedialog.askdirectory()
-    folder_path.set(temp)
-'''
+#procedure to show result if euclid button is clicked
 def run_program_euclid():
     global names,numOfPhotos
     numOfPhotos = int(entry_numOfPhotos.get())
@@ -61,6 +39,7 @@ def run_program_euclid():
     names = inti.run_euclid(filename, numOfPhotos)
     window_result_euclid()
 
+#procedure to show result if cosine button is clicked
 def run_program_cosine():
     global names,match,numOfPhotos
     numOfPhotos = int(entry_numOfPhotos.get())
@@ -68,17 +47,20 @@ def run_program_cosine():
     names,match = inti.run_cosine(filename, numOfPhotos)
     window_result_cosine()
 
+#procedure back to main menu from result window
+def back():
+    result.destroy()
+    root.deiconify()
+
+#result window config to show the result image
 def window_result_euclid():
     global result
     result = Toplevel(root)
     result.geometry("430x650+400+0")
-    #result.resizable(0,0)
+    result.resizable(0,0)
 
-    def myfunction(event):
-        canvas.configure(scrollregion=canvas.bbox('all'))
-
+    
     #self.canvas.focus_set()
-         
     def bind_mouse_scroll(parent, mode):
         #~~ Windows only
         parent.bind("<MouseWheel>", mode)
@@ -91,13 +73,7 @@ def window_result_euclid():
             canvas.yview_scroll(1, "unit")
         elif event.num == 4 or event.delta > 0:
             canvas.yview_scroll(-1, "unit")
-    '''
-    def xscroll():
-        if event.num == 5 or event.delta < 0:
-            self.canvas.xview_scroll(1, "unit")
-        elif event.num == 4 or event.delta > 0:
-            self.canvas.xview_scroll(-1, "unit")
-    '''
+    
     def update(event):
         if canvas.bbox('all') != None:
             region = canvas.bbox('all')
@@ -139,22 +115,19 @@ def window_result_euclid():
 
     canvas.bind('<Configure>', update)
     bind_mouse_scroll(canvas, yscroll)
-    #bind_mouse_scroll(xscrollbar, xscroll)
     bind_mouse_scroll(myscrollbar, yscroll)
     bind_mouse_scroll(frame, yscroll)
         
+#procedure to config window_result when cosine button is clicked
 def window_result_cosine():
     global result
     result = Toplevel(root)
     result.title('Result')
     result.geometry("430x650+400+0")
-    #result.resizable(0,0)
+    result.resizable(0,0)
 
-    def myfunction(event):
-        canvas.configure(scrollregion=canvas.bbox('all'))
-
+    
     #self.canvas.focus_set()
-         
     def bind_mouse_scroll(parent, mode):
         #~~ Windows only
         parent.bind("<MouseWheel>", mode)
@@ -213,18 +186,26 @@ def window_result_cosine():
 
     canvas.bind('<Configure>', update)
     bind_mouse_scroll(canvas, yscroll)
-    #bind_mouse_scroll(xscrollbar, xscroll)
     bind_mouse_scroll(myscrollbar, yscroll)
     bind_mouse_scroll(frame, yscroll)
 
-def back():
-    result.destroy()
-    root.deiconify()
-'''
-def get_numOfPhotos():
-    global numOfPhotos
-    numOfPhotos = entry_numOfPhotos.get()
-'''
+#Button class that can change color when mouse hover
+class HoverButton(Button):
+    def __init__(self, master, **kw):
+        Button.__init__(self,master=master,**kw)
+        self.defaultBackground = self["background"]
+        self.defaultForeground = self['foreground']
+        self.bind("<Enter>", self.on_enter)
+        self.bind("<Leave>", self.on_leave)
+
+    def on_enter(self, e):
+        self['background'] = self['activebackground']
+        self['foreground'] = self['activeforeground']
+
+    def on_leave(self, e):
+        self['background'] = self.defaultBackground
+        self['foreground'] = self.defaultForeground
+
 root = Tk()
 root.title('Face Recognition Program')
 root.configure(background='#edf5d3')
@@ -242,10 +223,7 @@ submenu = Menu(fileMenu)
 fileMenu.add_command(label="Exit", underline=0, command=root.quit)
 menubar.add_cascade(label="File", underline=0, menu=fileMenu)
 
-customFont = Font.Font(family="cambria",size=12,slant="italic")
-Font1 = Font.Font(family="Tahoma",size=10)
-Font2 = Font.Font(family="arial",size = 10, weight ='bold')
-
+thisfont = Font.Font(family='Intro Rust G Base 2 Line')
 
 folder_path = StringVar()
 filename = StringVar()
@@ -256,8 +234,7 @@ frame_top.grid(row=0,pady=10)
 
 frame_center = Frame(root,background='#edf5d3')
 frame_center.grid(row=1,pady=5,padx=5)
-#frame_center.grid_columnconfigure(0,weight=1)
-#frame_center.grid_rowconfigure(0,weight=1)
+
 
 frame_inner_center_left = Frame(frame_center,background='#edf5d3')
 frame_inner_center_left.grid(row=0,sticky='n')
@@ -275,10 +252,7 @@ frame_bottom_inner_center_left.grid(row=1,pady=30)
 frame_inner_center_right = Frame(frame_center,background='#edf5d3')
 frame_inner_center_right.grid(row=0,column=1,sticky='n',padx=3,pady=3)
 frame_inner_center_right.grid_columnconfigure(0,weight=1)
-'''
-frame_bottom = Frame(root)
-frame_bottom.grid(row=2)
-'''
+
 script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
 rel_path = r"icon\icon.png"
 abs_file_path = os.path.join(script_dir, rel_path)
@@ -288,13 +262,9 @@ icon = ImageTk.PhotoImage(temp)
 
 welcome = Label(frame_top, image = icon,background='#edf5d3')
 welcome.image = icon
-#welcome.configure(background='#edf5d3')
 welcome.grid(row=0,columnspan=3,sticky='n')
 
-'''
-browsebutton = Button(frame_inner_center_left, text="Browse Datasets Directory", bg="yellow",command=browse_button, font = Font1)
-browsebutton.grid(row=0,column=0, columnspan=2,sticky='ew')
-'''
+
 rel_path = r"icon\browse_image2.png"
 abs_file_path = os.path.join(script_dir, rel_path)
 temp = Image.open(abs_file_path)
@@ -304,8 +274,6 @@ browse_file_button = HoverButton(frame_top_inner_center_left, image=browse_file_
 browse_file_button.image = browse_file_icon
 browse_file_button.grid(row=0, column=0,columnspan=2)
 
-thisfont = Font.Font(family='Intro Rust G Base 2 Line')
-
 rel_path = r"icon\image-placeholder-icon.jpg"
 abs_file_path = os.path.join(script_dir, rel_path)
 temp = Image.open(abs_file_path)
@@ -314,7 +282,6 @@ temp = ReduceOpacity(temp,0.5)
 gambar_image = ImageTk.PhotoImage(temp)
 tulisan_image = Label(frame_inner_center_right, image = gambar_image, height=300,width=300,padx=3,pady=3,background='#edf5d3')
 tulisan_image.grid(row=0, columnspan=2)
-
 
 label_numOfPhotos = Label(frame_bottom_inner_center_left ,text = 'Masukkan banyaknya foto mirip\nyang ingin ditampilkan ',background='#edf5d3',font=thisfont)
 label_numOfPhotos.grid(row=3,padx=5,pady=20)
@@ -338,17 +305,6 @@ temp = temp.resize((150, 70), Image.ANTIALIAS)
 gambar_button_cosine = ImageTk.PhotoImage(temp)
 button_run_cosine = HoverButton(frame_bottom_inner_center_left, image=gambar_button_cosine, activebackground = 'silver', command = run_program_cosine,background='#edf5d3',border=0)
 button_run_cosine.grid(row=4,column=1, sticky='sew')
-
-
-#button_save_numofphotos = Button(frame_inner_center_left, text = 'save', command = get_numOfPhotos)
-#button_save_numofphotos.grid(row=3,column=1)
-
-
-#close_btn = HoverButton(frame_inner_center_left, text = "Close", activeforeground='#edf5d3',activebackground = 'maroon',command = root.quit, font = Font1) # closing the 'window' when you click the button
-#close_btn.grid(row=4,column=1,sticky='sew')
-
-#about = Label(frame_bottom, text = 'Program Face Recognition ini dibuat oleh:\n Kusuma-Istimewa', font= customFont)
-#about.grid(row=4, columnspan=2)
 
 root.rowconfigure(2,weight=1)
 root.columnconfigure(1,weight=1)
