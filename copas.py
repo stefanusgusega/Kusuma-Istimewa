@@ -118,20 +118,18 @@ class Matcher(object):
         features = extract_features(image_path)
         img_distances = self.euclid_dist(features)  # bentuk list
         img_distances_arr = np.array(img_distances) # bentuk numpy array
-        # getting top 5 records
+        # getting top 5 records (tergantung sih mau ditampilin brp foto)
         nearest_ids = np.argsort(img_distances_arr)[:topn].tolist()
         nearest_img_paths = self.names[nearest_ids].tolist()
-        print(nearest_ids)
         return nearest_img_paths, img_distances_arr[nearest_ids].tolist()
 
     def match2(self, image_path, topn=5): # matcher dengan metode cosine similarity
         features = extract_features(image_path)
         img_distances = self.cos_cdist(features)  # bentuk list
         img_distances_arr = np.array(img_distances) # bentuk numpy array
-        # getting top 5 records
+        # getting top 5 records (tergantung sih mau ditampilin brp foto)
         nearest_ids = np.argsort(img_distances_arr)[:topn].tolist()
         nearest_img_paths = self.names[nearest_ids].tolist()
-        print(nearest_ids)
         return nearest_img_paths, img_distances_arr[nearest_ids].tolist()
 
 def show_img(path):
