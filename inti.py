@@ -19,7 +19,7 @@ def extract_features(image_path, vector_size=32):
     try:
         # Using KAZE, cause SIFT, ORB and other was moved to additional module
         # which is adding addtional pain during install
-        alg = cv2.AKAZE_create()
+        alg = cv2.KAZE_create()
         # Dinding image keypoints
         kps = alg.detect(image)
         # Getting first 32 of them. 
@@ -143,9 +143,9 @@ def show_filename(path) :
     
 def run_euclid(images_path_query, sumphotos):
     # database for checking
-    images_path_database = r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul'   
+    images_path_database = r'C:\Users\windows\Desktop\query_db\PINS\pins_db'   
     # extract all features of all database to features.pck 
-    batch_extractor(images_path_database)
+    #batch_extractor(images_path_database)
     ma = Matcher('features.pck')
     # mengembalikan array foto paling mirip dari yg paling mirip sampai yg paling tidak mirip
     # disimpan pada array names (berisi file path dari foto-foto)
@@ -154,13 +154,13 @@ def run_euclid(images_path_query, sumphotos):
     return names
 def run_cosine(images_path_query,sumphotos):
     # database for checking
-    images_path_database = r'C:\Users\MEGA LIS SETIYAWATI\Documents\evan\tugas\algeo\PINS\pins_Aaron Paul'
+    images_path_database = r'C:\Users\windows\Desktop\query_db\PINS\pins_db'
     # extract all features of all database to features.pck
-    batch_extractor(images_path_database)
+    #batch_extractor(images_path_database)
     ma = Matcher('features.pck')
     # mengembalikan array foto paling mirip dari yg paling mirip sampai yang paling tidak mirip
     # disimpan pada array names (berisi file path dari foto-foto)
     # menggunakan match2 (menggunakan Metode Cosine Similarity)
     names, match = ma.match2(images_path_query, sumphotos)
-    return names
+    return names,match
 
